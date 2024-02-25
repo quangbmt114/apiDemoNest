@@ -12,6 +12,7 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+  @UsePipes(ValidationPipe)
   @Post('register')
   register(@Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.register(registerAuthDto);
@@ -22,7 +23,7 @@ export class AuthController {
     return this.authService.login(loginAuthDto);
   }
   @Post('refreshtoken')
-  refreshtoken(@Body() loginAuthDto: LoginAuthDto) {
-    return this.authService.login(loginAuthDto);
+  refreshtoken(@Body() { refresh_token }: any) {
+    return this.authService.refreshtoken(refresh_token);
   }
 }
