@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateUserAuthDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserAuthDto } from './dto/update-user.dto';
@@ -55,7 +55,17 @@ export class UserService {
   async update(
     id: number,
     updateUserAuthDto: UpdateUserAuthDto,
-  ): Promise<UpdateResult> {
-    return this.userRepository.update(id, updateUserAuthDto);
+  ): Promise<{ id: number }> {
+    const { affected } = await this.userRepository.update(
+      id,
+      updateUserAuthDto,
+    );
+    if (affected === 0) {
+      throw new HttpException('User not found', 404);
+    }
+    return { id };
+  }
+  async delete(id: number): Promise<DeleteResult> {
+    return this.userRepository.delete(id);
   }
 }
